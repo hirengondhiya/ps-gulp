@@ -35,7 +35,7 @@ gulp.task('styles', ['clean-styles'], function styles() {
 })
 
 gulp.task('clean-styles', function cleanStyles(done) {
-    var files = config.temp + '/**/*.css';
+    var files = config.temp + '**/*.css';
     clean(files, done);
 })
 
@@ -44,6 +44,10 @@ function clean(path, done) {
     del(path).then(done());
 }
 
+
+gulp.task('style-watcher', function styleWatcher() {
+    gulp.watch(config.less, ['styles']);
+})
 
 function log(msg) {
     if (typeof(msg) === 'object') {

@@ -8,7 +8,7 @@ module.exports = function() {
             ]
         },
         // file paths
-        temp: './.temp',
+        temp: './.temp/',
         // all js to vet
         alljs: [
             './src/**/*.js', 
