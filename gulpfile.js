@@ -29,8 +29,9 @@ gulp.task('styles', ['clean-styles'], function styles() {
 
     return gulp
         .src(config.less)
+        .pipe($.plumber())
         .pipe($.less())
-        .on('error', errorLogger)
+        // .on('error', errorLogger)
         .pipe($.autoprefixer(config.autoprefixer))
         .pipe(gulp.dest(config.temp));
 })
@@ -50,12 +51,12 @@ gulp.task('style-watcher', function styleWatcher() {
     gulp.watch(config.less, ['styles']);
 })
 
-function errorLogger(error) {
-    log('### Start of Error');
-    log(error);
-    log('End of Error.###');
-    this.emit('end');
-}
+// function errorLogger(error) {
+//     log('### Start of Error');
+//     log(error);
+//     log('End of Error.###');
+//     this.emit('end');
+// }
 
 function log(msg) {
     if (typeof(msg) === 'object') {
