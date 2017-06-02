@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var args = require('yargs').argv;
 var config = require('./gulp.config')();
-
+var del = require('del');
 var $ = require('gulp-load-plugins')({lazy: true});
 // var jshint = require('gulp-jshint');
 // var jscs = require('gulp-jscs');
@@ -24,7 +24,7 @@ gulp.task('vet', function vettask () {
         .pipe($.jshint.reporter('fail'));
 });
 
-gulp.task('styles', function styles() {
+gulp.task('styles', ['clean-styles'], function styles() {
     log('Compiling LESS to CSS');
 
     return gulp
@@ -33,6 +33,17 @@ gulp.task('styles', function styles() {
         .pipe($.autoprefixer(config.autoprefixer))
         .pipe(gulp.dest(config.temp));
 })
+
+gulp.task('clean-styles', function cleanStyles(done) {
+    var files = config.temp + '/**/*.css';
+    clean(files, done);
+})
+
+function clean(path, done) {
+    log('Cleaning: '+$.util.colors.blue(path));
+    del(path).then(done());
+}
+
 
 function log(msg) {
     if (typeof(msg) === 'object') {
