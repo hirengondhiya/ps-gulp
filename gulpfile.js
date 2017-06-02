@@ -30,6 +30,7 @@ gulp.task('styles', ['clean-styles'], function styles() {
     return gulp
         .src(config.less)
         .pipe($.less())
+        .on('error', errorLogger)
         .pipe($.autoprefixer(config.autoprefixer))
         .pipe(gulp.dest(config.temp));
 })
@@ -48,6 +49,13 @@ function clean(path, done) {
 gulp.task('style-watcher', function styleWatcher() {
     gulp.watch(config.less, ['styles']);
 })
+
+function errorLogger(error) {
+    log('### Start of Error');
+    log(error);
+    log('End of Error.###');
+    this.emit('end');
+}
 
 function log(msg) {
     if (typeof(msg) === 'object') {
