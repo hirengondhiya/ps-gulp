@@ -10,6 +10,8 @@ var $ = require('gulp-load-plugins')({lazy: true});
 // var gulpprint = require('gulp-print');
 // var gulpif = require('gulp-if');
 
+log('Starting gulp tasks');
+
 gulp.task('vet', function vettask () {
     log('Analysing source with JSHint & JSCS');
     return gulp
@@ -22,6 +24,16 @@ gulp.task('vet', function vettask () {
         .pipe($.jshint.reporter('fail'));
 });
 
+gulp.task('styles', function styles() {
+    log('Compiling LESS to CSS');
+
+    return gulp
+        .src(config.less)
+        .pipe($.less())
+        .pipe($.autoprefixer(config.autoprefixer))
+        .pipe(gulp.dest(config.temp));
+})
+
 function log(msg) {
     if (typeof(msg) === 'object') {
         for (var item in msg) {
@@ -30,6 +42,11 @@ function log(msg) {
             }
         }
     } else {
-        $.util.log($.util.colors.bgYellow(msg));
+        if(msg === 'Starting gulp tasks') {
+            $.util.log($.util.colors.bgCyan(msg));
+        } else {
+            $.util.log($.util.colors.bgYellow(msg));
+        }
+        
     }
 }
