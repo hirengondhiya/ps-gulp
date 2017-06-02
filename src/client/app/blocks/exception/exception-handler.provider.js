@@ -8,10 +8,10 @@
         .provider('exceptionHandler', exceptionHandlerProvider)
         .config(config);
 
-    /**
-     * Must configure the exception handling
-     * @return {[type]}
-     */
+    // /**
+    //  * Must configure the exception handling
+    //  * @return {[type]}
+    //  */
     function exceptionHandlerProvider() {
         /* jshint validthis:true */
         this.config = {
@@ -28,13 +28,13 @@
     }
 
     config.$inject = ['$provide'];
-    /**
-     * Configure by setting an optional string value for appErrorPrefix.
-     * Accessible via config.appErrorPrefix (via config value).
-     * @param  {[type]} $provide
-     * @return {[type]}
-     * @ngInject
-     */
+    // /**
+    //  * Configure by setting an optional string value for appErrorPrefix.
+    //  * Accessible via config.appErrorPrefix (via config value).
+    //  * @param  {[type]} $provide
+    //  * @return {[type]}
+    //  * @ngInject
+    //  */
     function config($provide) {
         $provide.decorator('$exceptionHandler', extendExceptionHandler);
     }
