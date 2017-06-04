@@ -52,12 +52,24 @@ gulp.task('style-watcher', function styleWatcherTask() {
 })
 
 gulp.task('wiredep', function wiredepTask() {
+    // this task will be called every time a bower component is installed
+    log('Wiring up bower javascript and css files & injecting custom javascript files from app')
     var options = config.getDefaultWiredepOptions();
     var wiredep = require('wiredep').stream;
     return gulp
         .src(config.index)
         .pipe(wiredep(options))
         .pipe($.inject(gulp.src(config.js)))
+        .pipe(gulp.dest(config.client));
+})
+
+gulp.task('inject',['wiredep', 'styles'], function injectTask() {
+    // created seperate task because it is not efficient to always compile custom css on bower install
+    log('Calling wiredep and injecting custom css styles');
+
+    return gulp
+        .src(config.index)
+        .pipe($.inject(gulp.src(config.css)))
         .pipe(gulp.dest(config.client));
 })
 

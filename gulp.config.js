@@ -1,6 +1,8 @@
 module.exports = function() {
     var client = './src/client/';
-    var clientApp = client + 'app/'
+    var clientApp = client + 'app/';
+    var temp = './.temp/';
+
     var config = {
         autoprefixer: {
             browsers: [
@@ -9,7 +11,7 @@ module.exports = function() {
             ]
         },
         // file paths
-        temp: './.temp/',
+        temp: temp,
         // all js to vet
         alljs: [
             './src/**/*.js', 
@@ -19,6 +21,9 @@ module.exports = function() {
             client+'styles/styles.less'
         ],
         index: client + 'index.html',
+        css: [
+            temp + 'styles.css'
+        ],
         js: [ 
             clientApp + '**/*.module.js',
             clientApp + '**/*.js',
