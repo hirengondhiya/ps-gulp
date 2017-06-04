@@ -1,5 +1,6 @@
 module.exports = function() {
-    var client = './src/client/'
+    var client = './src/client/';
+    var clientApp = client + 'app/'
     var config = {
         autoprefixer: {
             browsers: [
@@ -16,7 +17,29 @@ module.exports = function() {
         ],
         less: [
             client+'styles/styles.less'
-        ]
+        ],
+        index: client + 'index.html',
+        js: [ 
+            clientApp + '**/*.module.js',
+            clientApp + '**/*.js',
+            '!' + clientApp + '**/*.spec.js'
+        ],
+        client: client,
+
+        bower: {
+            json: require('./bower.json'),
+            directory: './bower_components/',
+            ignorePath: '../..'
+        }
     };
+
+    config.getDefaultWiredepOptions = function DefaultWiredepOptions() {
+        var options = {
+            bowerJson: config.bower.json,
+            directory: config.bower.directory,
+            ignorePath: config.bower.ignorePath
+        };
+        return options;
+    }
     return config;
 }

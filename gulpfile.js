@@ -12,7 +12,7 @@ var $ = require('gulp-load-plugins')({lazy: true});
 
 log('Starting gulp tasks');
 
-gulp.task('vet', function vettask () {
+gulp.task('vet', function vetTask () {
     log('Analysing source with JSHint & JSCS');
     return gulp
         .src(config.alljs)
@@ -24,7 +24,7 @@ gulp.task('vet', function vettask () {
         .pipe($.jshint.reporter('fail'));
 });
 
-gulp.task('styles', ['clean-styles'], function styles() {
+gulp.task('styles', ['clean-styles'], function stylesTask() {
     log('Compiling LESS to CSS');
 
     return gulp
@@ -36,7 +36,7 @@ gulp.task('styles', ['clean-styles'], function styles() {
         .pipe(gulp.dest(config.temp));
 })
 
-gulp.task('clean-styles', function cleanStyles(done) {
+gulp.task('clean-styles', function cleanStylesTask(done) {
     var files = config.temp + '**/*.css';
     clean(files, done);
 })
@@ -47,8 +47,18 @@ function clean(path, done) {
 }
 
 
-gulp.task('style-watcher', function styleWatcher() {
+gulp.task('style-watcher', function styleWatcherTask() {
     gulp.watch(config.less, ['styles']);
+})
+
+gulp.task('wiredep', function wiredepTask() {
+    var options = config.getDefaultWiredepOptions();
+    var wiredep = require('wiredep').stream;
+    return gulp
+        .src(config.index)
+        .pipe(wiredep(options))
+        .pipe($.inject(gulp.src(config.js)))
+        .pipe(gulp.dest(config.client));
 })
 
 // function errorLogger(error) {
