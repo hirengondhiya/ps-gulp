@@ -15,6 +15,10 @@ var port = process.env.PORT || config.defaultPort;
 
 log('Starting gulp tasks');
 
+gulp.task('help', $.taskListing);
+
+gulp.task('default', ['help']);
+
 gulp.task('vet', function vetTask () {
     log('Analysing source with JSHint & JSCS');
     return gulp
@@ -37,12 +41,12 @@ gulp.task('styles', ['clean-styles'], function stylesTask() {
         // .on('error', errorLogger)
         .pipe($.autoprefixer(config.autoprefixer))
         .pipe(gulp.dest(config.temp));
-})
+});
 
 gulp.task('clean-styles', function cleanStylesTask(done) {
     var files = config.temp + '**/*.css';
     clean(files, done);
-})
+});
 
 function clean(path, done) {
     log('Cleaning: '+$.util.colors.blue(path));
@@ -52,7 +56,7 @@ function clean(path, done) {
 
 gulp.task('style-watcher', function styleWatcherTask() {
     gulp.watch(config.less, ['styles']);
-})
+});
 
 gulp.task('wiredep', function wiredepTask() {
     // this task will be called every time a bower component is installed
@@ -64,7 +68,7 @@ gulp.task('wiredep', function wiredepTask() {
         .pipe(wiredep(options))
         .pipe($.inject(gulp.src(config.js)))
         .pipe(gulp.dest(config.client));
-})
+});
 
 gulp.task('inject',['wiredep', 'styles'], function injectTask() {
     // created seperate task because it is not efficient to always compile custom css on bower install
@@ -74,7 +78,7 @@ gulp.task('inject',['wiredep', 'styles'], function injectTask() {
         .src(config.index)
         .pipe($.inject(gulp.src(config.css)))
         .pipe(gulp.dest(config.client));
-})
+});
 
 gulp.task('serve-dev', ['inject'], function serveDevTask() {
     log('Serving dev build');
@@ -112,7 +116,7 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
         .on('exit', function onNodemonExit(evt) {
             log('Nodemon exit cleanly.');
         });
-})
+});
 
 function changeEvent(event) {
     var scrPattern = new RegExp('/.*(?=/' + config.source + ')/');
