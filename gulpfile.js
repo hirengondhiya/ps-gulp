@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var args = require('yargs').argv;
 var config = require('./gulp.config')();
 var del = require('del');
+var browserSync = require('browser-sync');
 var $ = require('gulp-load-plugins')({lazy: true});
 var port = process.env.PORT || config.defaultPort;
 
@@ -92,6 +93,7 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
     return $.nodemon(nodeOptions)
         .on('start', function onNodemonStart() {
             log('Nodemon started ');
+            startBrowserSync();
         })
         // we can also add dependency on gulp tasks to run before restart for ex vet as follows
         // .on('restart', ['vet'], function onNodemonRestart(evt) {
@@ -106,6 +108,33 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
         })
         ;
 })
+
+function startBrowserSync() {
+    if(browserSync.active) {
+        return
+    }
+    log('Starting Browser Sync on Port: ' + port);
+
+    var browserSyncOptions = {
+        proxy: 'localhost:' + port,
+        port: 3000,
+        files: [config.client + '**/*.*'],
+        ghostMode: {
+            clicks: true,
+            location: false,
+            forms: true,
+            scroll: true
+        },
+        injectChanges: true, // inject only files which are changed
+        logFileChanges: true,
+        logLevel: 'debug',
+        logPrefix: 'gulp-patterns',
+        notify: true, // notify in browser after sync completed
+        reloadDelay: 1000
+    };
+
+    browserSync(browserSyncOptions);
+}
 
 // function errorLogger(error) {
 //     log('### Start of Error');
