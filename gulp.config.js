@@ -24,6 +24,7 @@ module.exports = function() {
             temp + 'styles.css'
         ],
         fonts: 'bower_components/font-awesome/fonts/**/*.*',
+        htmltemplates: clientApp + '**/*.html',
         images: client + 'images/**/*.*',
         index: client + 'index.html',
         js: [ 
@@ -37,12 +38,23 @@ module.exports = function() {
         server: server,
         temp: temp,
 
+        // browser Sync
         reloadBrowserDelay: 1000,
 
         bower: {
             json: require('./bower.json'),
             directory: './bower_components/',
             ignorePath: '../..'
+        },
+
+        // template cahe
+        templateCache: {
+            file: 'templatecahe.js',
+            options: {
+                module: 'app.core',
+                standAlone: false,
+                root: 'app/'
+            }
         },
 
         // node settings

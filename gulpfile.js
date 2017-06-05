@@ -47,14 +47,26 @@ gulp.task('clean-styles', function cleanStylesTask(done) {
     var files = config.temp + '**/*.css';
     clean(files, done);
 });
+
 gulp.task('clean-fonts', function cleanFontsTask(done) {
     var files = config.build + 'fonts/**/*.*';
     clean(files, done);
 });
+
 gulp.task('clean-images', function cleanImagesTask(done) {
     var files = config.build + 'images/**/*.images';
     clean(files, done);
 });
+
+gulp.task('clean-code', function cleanCodeTask(done) {
+    var files = [].concat(
+        config.build + 'js/**/*.js',
+        config.build + '**/*.html',
+        config.temp + '**/*.js'
+    );
+    clean(files, done);
+});
+
 gulp.task('clean', function cleanTask(done) {
     var delconfig = [].concat(config.build, config.temp);
     clean(delconfig, done);
@@ -129,6 +141,16 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
             log('Nodemon exit cleanly.');
         });
 });
+
+gulp.task('templatecache', ['clean-code'], function templatecacheTask() {
+    return gulp.src(config.htmltemplates)
+        .pipe($.minifyHtml({empty: true}))
+        .pipe($.angularTemplatecache(
+            config.templateCache.file,
+            config.templateCache.options
+        ))
+        .pipe(gulp.dest(config.temp));
+})
 
 function changeEvent(event) {
     var scrPattern = new RegExp('/.*(?=/' + config.source + ')/');
