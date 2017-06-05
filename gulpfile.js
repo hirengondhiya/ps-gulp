@@ -3,6 +3,8 @@ var args = require('yargs').argv;
 var config = require('./gulp.config')();
 var del = require('del');
 var $ = require('gulp-load-plugins')({lazy: true});
+var port = process.env.PORT || config.defaultPort;
+
 // var jshint = require('gulp-jshint');
 // var jscs = require('gulp-jscs');
 // var stylish = require('gulp-jscs-stylish');
@@ -71,6 +73,23 @@ gulp.task('inject',['wiredep', 'styles'], function injectTask() {
         .src(config.index)
         .pipe($.inject(gulp.src(config.css)))
         .pipe(gulp.dest(config.client));
+})
+
+gulp.task('serve-dev', ['inject'], function serveDevTask() {
+    log('Serving dev build');
+    
+    var isDev = true;
+    var nodeOptions = {
+        script: config.nodeServer, // path to app.js file
+        delayTime: 1,
+        env: {
+            'PORT': port, 
+            'NODE_ENV': isDev? 'dev' : 'build'
+        },
+        watch: [config.server] // the files to restart on
+    }
+
+    return $.nodemon(nodeOptions);
 })
 
 // function errorLogger(error) {

@@ -2,6 +2,7 @@ module.exports = function() {
     var client = './src/client/';
     var clientApp = client + 'app/';
     var temp = './.temp/';
+    var server = './src/server/';
 
     var config = {
         autoprefixer: {
@@ -30,12 +31,17 @@ module.exports = function() {
             '!' + clientApp + '**/*.spec.js'
         ],
         client: client,
+        server: server,
 
         bower: {
             json: require('./bower.json'),
             directory: './bower_components/',
             ignorePath: '../..'
-        }
+        },
+
+        // node settings
+        defaultPort: 7203,
+        nodeServer: server + 'app.js'
     };
 
     config.getDefaultWiredepOptions = function DefaultWiredepOptions() {
