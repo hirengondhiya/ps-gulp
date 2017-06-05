@@ -94,7 +94,7 @@ gulp.task('wiredep', function wiredepTask() {
         .pipe(gulp.dest(config.client));
 });
 
-gulp.task('inject',['wiredep', 'styles'], function injectTask() {
+gulp.task('inject',['wiredep', 'styles', 'templatecache'], function injectTask() {
     // created seperate task because it is not efficient to always compile custom css on bower install
     log('Calling wiredep and injecting custom css styles');
 
@@ -104,10 +104,28 @@ gulp.task('inject',['wiredep', 'styles'], function injectTask() {
         .pipe(gulp.dest(config.client));
 });
 
+gulp.task('optimize', ['inject'], function optimizeTask() {
+    var templatecachefile = config.temp + config.templateCache.file;
+    return gulp.src(config.index)
+        .pipe($.plumber())
+        .pipe($.inject(gulp.src(templatecachefile, {read: false}), { 
+            starttag: '<!--inject:templates-->'
+        }))
+        .pipe($.useref({searchPath: './'}))
+        .pipe(gulp.dest(config.build));
+});
+
 gulp.task('serve-dev', ['inject'], function serveDevTask() {
     log('Serving dev build');
-    
-    var isDev = true;
+    serve(true);
+});
+
+gulp.task('serve-build', ['optimize'], function serveProdTask() {
+    log('Serving prod build');
+    serve(false);
+});
+
+function serve(isDev) {
     var nodeOptions = {
         script: config.nodeServer, // path to app.js file
         delayTime: 1,
@@ -121,7 +139,7 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
     return $.nodemon(nodeOptions)
         .on('start', function onNodemonStart() {
             log('Nodemon started ');
-            startBrowserSync();
+            startBrowserSync(isDev);
         })
         // we can also add dependency on gulp tasks to run before restart for ex vet as follows
         // .on('restart', ['vet'], function onNodemonRestart(evt) {
@@ -140,7 +158,8 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
         .on('exit', function onNodemonExit(evt) {
             log('Nodemon exit cleanly.');
         });
-});
+
+}
 
 gulp.task('templatecache', ['clean-code'], function templatecacheTask() {
     return gulp.src(config.htmltemplates)
@@ -157,23 +176,27 @@ function changeEvent(event) {
     log($.util.colors.bgRed('File ' + event.path.replace(scrPattern, '') + ' ' + event.type));
 }
 
-function startBrowserSync() {
+function startBrowserSync(isDev) {
     if(browserSync.active || args.nosync) {
         return
     }
     log('Starting Browser Sync on Port: ' + port);
 
-    gulp.watch(config.less, ['styles'])
-        .on('change', function onStyleChange(event) { changeEvent(event); }) ;
-
+    if(isDev) {
+        gulp.watch(config.less, ['styles'])
+            .on('change', function onStyleChange(event) { changeEvent(event); }) ;
+    } else {
+        gulp.watch([config.less, config.js, config.htmltemplates] , ['optimize', browserSync.reload])
+            .on('change', function onStyleChange(event) { changeEvent(event); }) ;
+    }
     var browserSyncOptions = {
         proxy: 'localhost:' + port,
         port: 3000,
-        files: [
+        files: isDev ? [ 
             config.client + '**/*.*',
             '!' + config.less,
             config.temp + '**/*.css'
-        ],
+        ] : [],
         ghostMode: {
             clicks: true,
             location: false,
