@@ -157,6 +157,12 @@ function startBrowserSync() {
     browserSync(browserSyncOptions);
 }
 
+gulp.task('fonts', function fontsTask() {
+    return gulp
+        .src(config.fonts)
+        .pipe(gulp.dest(config.build + 'fonts'));
+});
+
 // function errorLogger(error) {
 //     log('### Start of Error');
 //     log(error);

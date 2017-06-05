@@ -13,26 +13,28 @@ module.exports = function() {
             ]
         },
         // file paths
-        temp: temp,
         // all js to vet
         alljs: [
             './src/**/*.js', 
             './*.js'
         ],
-        less: [
-            client+'styles/styles.less'
-        ],
-        index: client + 'index.html',
+        build: './build/',
+        client: client,
         css: [
             temp + 'styles.css'
         ],
+        fonts: 'bower_components/font-awesome/fonts/**/*.*',
+        index: client + 'index.html',
         js: [ 
             clientApp + '**/*.module.js',
             clientApp + '**/*.js',
             '!' + clientApp + '**/*.spec.js'
         ],
-        client: client,
+        less: [
+            client+'styles/styles.less'
+        ],
         server: server,
+        temp: temp,
 
         reloadBrowserDelay: 1000,
 
