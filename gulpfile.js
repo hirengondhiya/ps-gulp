@@ -99,19 +99,24 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
         // .on('restart', ['vet'], function onNodemonRestart(evt) {
         .on('restart', function onNodemonRestart(evt) {
             log('Nodemon restarted on file changes: ' + evt);
+
+            //settimeout to make sure browser reloads only after nodemon finishes loading server files
+            setTimeout(function reloadBrowser() { 
+                browserSync.notify('reloading now...');
+                browserSync.reload({stream: false})
+            }, config.reloadBrowserDelay)
         })
         .on('crash', function onNodemonCrash() {
             log('Nodemon crshed due to some error.');
         })
         .on('exit', function onNodemonExit(evt) {
             log('Nodemon exit cleanly.');
-        })
-        ;
+        });
 })
 
 function changeEvent(event) {
     var scrPattern = new RegExp('/.*(?=/' + config.source + ')/');
-    log('File ' + event.path.replace(scrPattern, '') + ' ' + event.type);
+    log($.util.colors.bgRed('File ' + event.path.replace(scrPattern, '') + ' ' + event.type));
 }
 
 function startBrowserSync() {

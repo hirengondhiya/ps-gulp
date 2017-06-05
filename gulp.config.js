@@ -34,6 +34,8 @@ module.exports = function() {
         client: client,
         server: server,
 
+        reloadBrowserDelay: 1000,
+
         bower: {
             json: require('./bower.json'),
             directory: './bower_components/',
