@@ -158,9 +158,20 @@ function startBrowserSync() {
 }
 
 gulp.task('fonts', function fontsTask() {
+    log('Copying fonts to build folder.')
+
     return gulp
         .src(config.fonts)
         .pipe(gulp.dest(config.build + 'fonts'));
+});
+
+gulp.task('images', function imagesTask() {
+    log('Compressing & copying images to build folder.')
+
+    return gulp
+        .src(config.images)
+        .pipe($.imagemin({optimizationLevel: 4}))
+        .pipe(gulp.dest(config.build + 'images'));
 });
 
 // function errorLogger(error) {
