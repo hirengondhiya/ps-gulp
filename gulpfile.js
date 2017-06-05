@@ -89,7 +89,22 @@ gulp.task('serve-dev', ['inject'], function serveDevTask() {
         watch: [config.server] // the files to restart on
     }
 
-    return $.nodemon(nodeOptions);
+    return $.nodemon(nodeOptions)
+        .on('start', function onNodemonStart() {
+            log('Nodemon started ');
+        })
+        // we can also add dependency on gulp tasks to run before restart for ex vet as follows
+        // .on('restart', ['vet'], function onNodemonRestart(evt) {
+        .on('restart', function onNodemonRestart(evt) {
+            log('Nodemon restarted on file changes: ' + evt);
+        })
+        .on('crash', function onNodemonCrash() {
+            log('Nodemon crshed due to some error.');
+        })
+        .on('exit', function onNodemonExit(evt) {
+            log('Nodemon exit cleanly.');
+        })
+        ;
 })
 
 // function errorLogger(error) {
