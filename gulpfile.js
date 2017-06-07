@@ -106,12 +106,15 @@ gulp.task('inject',['wiredep', 'styles', 'templatecache'], function injectTask()
 
 gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
     var templatecachefile = config.temp + config.templateCache.file;
+
     return gulp.src(config.index)
         .pipe($.plumber())
         .pipe($.inject(gulp.src(templatecachefile, {read: false}), { 
             starttag: '<!--inject:templates-->'
         }))
         .pipe($.useref({searchPath: './'}))
+        .pipe($.if('*.css', $.csso()))
+        .pipe($.if('*.js', $.uglify()))
         .pipe(gulp.dest(config.build));
 });
 
