@@ -104,7 +104,7 @@ gulp.task('inject',['wiredep', 'styles', 'templatecache'], function injectTask()
         .pipe(gulp.dest(config.client));
 });
 
-gulp.task('optimize', ['inject'], function optimizeTask() {
+gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
     var templatecachefile = config.temp + config.templateCache.file;
     return gulp.src(config.index)
         .pipe($.plumber())
