@@ -118,7 +118,10 @@ gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
         .pipe($.if('*.js', $.uglify()))
         .pipe($.if('!**/index.html', $.rev()))
         .pipe($.revReplace())
-        .pipe(gulp.dest(config.build));
+        .pipe(gulp.dest(config.build))
+        .pipe($.rev.manifest())
+        .pipe(gulp.dest(config.build))    
+        ;
 });
 
 gulp.task('serve-dev', ['inject'], function serveDevTask() {
