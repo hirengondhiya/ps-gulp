@@ -240,6 +240,35 @@ gulp.task('images', function imagesTask() {
         .pipe(gulp.dest(config.build + 'images'));
 });
 
+
+// Bump the Version 
+//     --type=pre will bump the prerelease version *.*.*-xdescribe
+//     --type=patch or no flag will bump the patch version *.*.x
+//     --type=minor will bump the minor version *.x.*
+//     --type=major will bump the major version x.0.0
+//     --version=x.x.x will bump to a specific version and ignore other flags
+gulp.task('bump', function bumpTask() {
+    var msg = 'Bumping verstion ';
+    var options = { };
+    var type = args.type;
+    var version = args.version;
+
+    if(version) {
+        msg += 'to ' + version;
+        options.version = version;
+    } else {
+        msg += 'type to' + type;
+        options.type = type;
+    }
+
+    log(msg);
+
+    return gulp
+        .src(config.packages)
+        .pipe($.bump(options))
+        .pipe(gulp.dest(config.root));
+});
+
 // function errorLogger(error) {
 //     log('### Start of Error');
 //     log(error);

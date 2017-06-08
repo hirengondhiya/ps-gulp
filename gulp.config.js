@@ -1,9 +1,11 @@
 module.exports = function() {
-    var source = './src/';
     var client = './src/client/';
     var clientApp = client + 'app/';
-    var temp = './.temp/';
+    var root = './'
     var server = './src/server/';
+    var source = './src/';
+    var temp = './.temp/';
+
 
     var config = {
         autoprefixer: {
@@ -35,6 +37,11 @@ module.exports = function() {
         less: [
             client+'styles/styles.less'
         ],
+        packages: [
+            'package.json',
+            'bower.json'
+        ],
+        root : root,
         server: server,
         temp: temp,
 
