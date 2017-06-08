@@ -116,6 +116,8 @@ gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
         .pipe($.if('*.css', $.csso()))
         .pipe($.if('**/app.js', $.ngAnnotate()))
         .pipe($.if('*.js', $.uglify()))
+        .pipe($.if('!**/index.html', $.rev()))
+        .pipe($.revReplace())
         .pipe(gulp.dest(config.build));
 });
 
