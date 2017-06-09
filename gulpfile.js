@@ -73,10 +73,9 @@ gulp.task('clean', function cleanTask(done) {
 });
 
 function clean(path, done) {
-    log('Cleaning: '+$.util.colors.blue(path));
+    log('Cleaning: ' + $.util.colors.blue(path));
     del(path).then(done());
 }
-
 
 gulp.task('style-watcher', function styleWatcherTask() {
     gulp.watch(config.less, ['styles']);
@@ -84,7 +83,7 @@ gulp.task('style-watcher', function styleWatcherTask() {
 
 gulp.task('wiredep', function wiredepTask() {
     // this task will be called every time a bower component is installed
-    log('Wiring up bower javascript and css files & injecting custom javascript files from app')
+    log('Wiring up bower javascript and css files & injecting custom javascript files from app');
     var options = config.getDefaultWiredepOptions();
     var wiredep = require('wiredep').stream;
     return gulp
@@ -109,7 +108,7 @@ gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
 
     return gulp.src(config.index)
         .pipe($.plumber())
-        .pipe($.inject(gulp.src(templatecachefile, {read: false}), { 
+        .pipe($.inject(gulp.src(templatecachefile, {read: false}), {
             starttag: '<!--inject:templates-->'
         }))
         .pipe($.useref({searchPath: './'}))
@@ -120,7 +119,7 @@ gulp.task('optimize', ['inject', 'fonts', 'images'], function optimizeTask() {
         .pipe($.revReplace())
         .pipe(gulp.dest(config.build))
         .pipe($.rev.manifest())
-        .pipe(gulp.dest(config.build))    
+        .pipe(gulp.dest(config.build))
         ;
 });
 
@@ -139,11 +138,11 @@ function serve(isDev) {
         script: config.nodeServer, // path to app.js file
         delayTime: 1,
         env: {
-            'PORT': port, 
-            'NODE_ENV': isDev? 'dev' : 'build'
+            'PORT': port,
+            'NODE_ENV': isDev ? 'dev' : 'build'
         },
         watch: [config.server] // the files to restart on
-    }
+    };
 
     return $.nodemon(nodeOptions)
         .on('start', function onNodemonStart() {
@@ -156,10 +155,10 @@ function serve(isDev) {
             log('Nodemon restarted on file changes: ' + evt);
 
             //settimeout to make sure browser reloads only after nodemon finishes loading server files
-            setTimeout(function reloadBrowser() { 
+            setTimeout(function reloadBrowser() {
                 browserSync.notify('reloading now...');
-                browserSync.reload({stream: false})
-            }, config.reloadBrowserDelay)
+                browserSync.reload({stream: false});
+            }, config.reloadBrowserDelay);
         })
         .on('crash', function onNodemonCrash() {
             log('Nodemon crshed due to some error.');
@@ -178,7 +177,7 @@ gulp.task('templatecache', ['clean-code'], function templatecacheTask() {
             config.templateCache.options
         ))
         .pipe(gulp.dest(config.temp));
-})
+});
 
 function changeEvent(event) {
     var scrPattern = new RegExp('/.*(?=/' + config.source + ')/');
@@ -186,22 +185,25 @@ function changeEvent(event) {
 }
 
 function startBrowserSync(isDev) {
-    if(browserSync.active || args.nosync) {
-        return
+    if (browserSync.active || args.nosync) {
+        return;
     }
     log('Starting Browser Sync on Port: ' + port);
 
-    if(isDev) {
+    if (isDev) {
         gulp.watch(config.less, ['styles'])
             .on('change', function onStyleChange(event) { changeEvent(event); }) ;
     } else {
-        gulp.watch([config.less, config.js, config.htmltemplates] , ['optimize', browserSync.reload])
+        gulp.watch(
+                [config.less, config.js, config.htmltemplates],
+                ['optimize', browserSync.reload]
+            )
             .on('change', function onStyleChange(event) { changeEvent(event); }) ;
     }
     var browserSyncOptions = {
         proxy: 'localhost:' + port,
         port: 3000,
-        files: isDev ? [ 
+        files: isDev ? [
             config.client + '**/*.*',
             '!' + config.less,
             config.temp + '**/*.css'
@@ -224,7 +226,7 @@ function startBrowserSync(isDev) {
 }
 
 gulp.task('fonts', function fontsTask() {
-    log('Copying fonts to build folder.')
+    log('Copying fonts to build folder.');
 
     return gulp
         .src(config.fonts)
@@ -232,7 +234,7 @@ gulp.task('fonts', function fontsTask() {
 });
 
 gulp.task('images', function imagesTask() {
-    log('Compressing & copying images to build folder.')
+    log('Compressing & copying images to build folder.');
 
     return gulp
         .src(config.images)
@@ -240,8 +242,7 @@ gulp.task('images', function imagesTask() {
         .pipe(gulp.dest(config.build + 'images'));
 });
 
-
-// Bump the Version 
+// Bump the Version
 //     --type=pre will bump the prerelease version *.*.*-xdescribe
 //     --type=patch or no flag will bump the patch version *.*.x
 //     --type=minor will bump the minor version *.x.*
@@ -249,11 +250,11 @@ gulp.task('images', function imagesTask() {
 //     --version=x.x.x will bump to a specific version and ignore other flags
 gulp.task('bump', function bumpTask() {
     var msg = 'Bumping verstion ';
-    var options = { };
+    var options = {};
     var type = args.type;
     var version = args.version;
 
-    if(version) {
+    if (version) {
         msg += 'to ' + version;
         options.version = version;
     } else {
@@ -268,6 +269,33 @@ gulp.task('bump', function bumpTask() {
         .pipe($.bump(options))
         .pipe(gulp.dest(config.root));
 });
+
+gulp.task('test', ['vet', 'templatecache'], function testTask(done) {
+    startTests(true, done);
+});
+
+function startTests(singleRun, done) {
+    var karma = require('karma').server;
+    var excludeFiles = [ ];
+    var serverIntegrationSpecs = config.serverIntegrationSpecs;
+    excludeFiles = serverIntegrationSpecs;
+
+    karma.start({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: !!singleRun,
+        exclude: excludeFiles
+    }, karmaCompleted);
+
+    function karmaCompleted(karmaResult) {
+        log('Karma completed!');
+
+        if (karmaResult === 1) {
+            done('Karma: completed with error code ' + karmaResult);
+        } else {
+            done();
+        }
+    }
+}
 
 // function errorLogger(error) {
 //     log('### Start of Error');
@@ -284,11 +312,10 @@ function log(msg) {
             }
         }
     } else {
-        if(msg === 'Starting gulp tasks') {
+        if (msg === 'Starting gulp tasks') {
             $.util.log($.util.colors.bgCyan(msg));
         } else {
             $.util.log($.util.colors.bgYellow(msg));
         }
-        
     }
 }
